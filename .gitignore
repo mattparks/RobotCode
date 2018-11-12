@@ -1,0 +1,5 @@
+out/*
+Alpha/.gradle/*
+Alpha/out/*
+Colonel/.gradle/*
+Colonel/out/*
