@@ -3,6 +3,7 @@ package frc.team537.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 import frc.team537.robot.Robot;
+import frc.team537.robot.subsystems.SwerveModule;
 import frc.team537.robot.vision.GripBoiler;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
@@ -10,9 +11,9 @@ import org.opencv.imgproc.Imgproc;
 public class CommandFindBoiler extends Command {
 	private final Object imgLock = new Object();
 	private VisionThread visionThread;
-	private int centreX;
+	private double rate;
 
-	public CommandFindBoiler(double angle) {
+	public CommandFindBoiler() {
 		requires(Robot.subsystemDrive);
 
 		visionThread = new VisionThread(Robot.subsystemCamera.getUsbCamera(), new GripBoiler(), pipeline -> {
@@ -20,20 +21,25 @@ public class CommandFindBoiler extends Command {
 				Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 
 				synchronized (imgLock) {
-					centreX = r.x + (r.width / 2);
+					double halfWidth = (double) r.width / 2.0;
+					rate = ((double) r.x - halfWidth) / halfWidth;
 				}
+			} else {
+				rate = 1.0;
 			}
 		});
 	}
 
 	@Override
 	protected void initialize() {
+		Robot.subsystemDrive.reset();
+		Robot.subsystemDrive.setMode(SwerveModule.SwerveMode.ModeSpeed);
 		visionThread.start();
 	}
 
 	@Override
 	protected void execute() {
-		// centreX is the centre, do something with it.
+		Robot.subsystemDrive.setTarget(0.0f, 0.5 * Math.pow(rate, 2.5), 0.0f, 0.0f);
 	}
 
 	@Override
@@ -43,6 +49,7 @@ public class CommandFindBoiler extends Command {
 
 	@Override
 	protected void end() {
+		Robot.subsystemDrive.stop();
 		visionThread.stop();
 	}
 
