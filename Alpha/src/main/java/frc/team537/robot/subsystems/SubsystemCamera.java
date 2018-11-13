@@ -20,4 +20,8 @@ public class SubsystemCamera extends Subsystem {
 	@Override
 	protected void initDefaultCommand() {
 	}
+
+	public UsbCamera getUsbCamera() {
+		return usbCamera;
+	}
 }
