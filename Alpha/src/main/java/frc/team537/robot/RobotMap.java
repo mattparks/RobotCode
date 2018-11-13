@@ -19,6 +19,7 @@ public class RobotMap {
 	 */
 	public static class Subsystems {
 		public static final boolean DRIVE = true;
+		public static final boolean LIDAR = true;
 		public static final boolean CAMERA = false;
 		public static final boolean COLLECT = true;
 		public static final boolean LEDS = false;

@@ -13,6 +13,7 @@ import frc.team537.robot.subsystems.SubsystemRamp.RampSide;
 public class Robot extends IterativeRobot {
 	public static SubsystemCamera subsystemCamera;
 	public static SubsystemGyro subsystemGyro;
+	public static SubsystemLidar subsystemLidar;
 	public static SubsystemLeds subsystemLeds;
 	public static SubsystemCollect subsystemCollect;
 	public static SubsystemDrive subsystemDrive;
@@ -33,6 +34,10 @@ public class Robot extends IterativeRobot {
 		}
 
 		subsystemGyro = new SubsystemGyro();
+
+		if (RobotMap.Subsystems.LIDAR) {
+			subsystemLidar = new SubsystemLidar();
+		}
 
 		if (RobotMap.Subsystems.LEDS) {
 			subsystemLeds = new SubsystemLeds();
