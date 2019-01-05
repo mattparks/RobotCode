@@ -1,33 +1,32 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.Talon;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.RobotMap;
 import frc.robot.commands.DriveCurvature;
 
 public class Drivetrain extends Subsystem {
-	private Talon m_leftMasterTalon = null;
-	private Talon m_leftNormalTalon = null;
-	private Talon m_leftMiniTalon = null;
-	private Talon m_rightMasterTalon = null;
-	private Talon m_rightNormalTalon = null;
-	private Talon m_rightMiniTalon = null;
+	private WPI_TalonSRX m_left0Talon = new WPI_TalonSRX(RobotMap.CAN.DRIVE_LEFT_MASTER);
+	private WPI_TalonSRX m_left1Talon = new WPI_TalonSRX(RobotMap.CAN.DRIVE_LEFT_NORMAL);
+	private WPI_TalonSRX m_left2Talon = new WPI_TalonSRX(RobotMap.CAN.DRIVE_LEFT_MINI);
+	private WPI_TalonSRX m_right0Talon = new WPI_TalonSRX(RobotMap.CAN.DRIVE_RIGHT_MASTER);
+	private WPI_TalonSRX m_right1Talon = new WPI_TalonSRX(RobotMap.CAN.DRIVE_RIGHT_NORMAL);
+	private WPI_TalonSRX m_right2Talon = new WPI_TalonSRX(RobotMap.CAN.DRIVE_RIGHT_MINI);
+	
   private DifferentialDrive m_differentialDrive = null;
   
 	public Drivetrain() {
-		m_leftMasterTalon = new Talon(RobotMap.CAN.DRIVE_LEFT_MASTER);
-		m_leftNormalTalon = new Talon(RobotMap.CAN.DRIVE_LEFT_NORMAL);
-		m_leftMiniTalon = new Talon(RobotMap.CAN.DRIVE_LEFT_MINI);
-		m_rightMasterTalon = new Talon(RobotMap.CAN.DRIVE_RIGHT_MASTER);
-		m_rightNormalTalon = new Talon(RobotMap.CAN.DRIVE_RIGHT_NORMAL);
-		m_rightMiniTalon = new Talon(RobotMap.CAN.DRIVE_RIGHT_MINI);
+		m_left1Talon.set(ControlMode.Follower, RobotMap.CAN.DRIVE_LEFT_MASTER);
+		m_left2Talon.set(ControlMode.Follower, RobotMap.CAN.DRIVE_LEFT_MASTER);
+		m_right1Talon.set(ControlMode.Follower, RobotMap.CAN.DRIVE_RIGHT_MASTER);
+		m_right2Talon.set(ControlMode.Follower, RobotMap.CAN.DRIVE_RIGHT_MASTER);
 
-		SpeedControllerGroup leftMotors = new SpeedControllerGroup(m_leftMasterTalon, m_leftNormalTalon, m_leftMiniTalon);
-		SpeedControllerGroup rightMotors = new SpeedControllerGroup(m_rightMasterTalon, m_rightNormalTalon, m_rightMiniTalon);
-
-		m_differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
+		m_differentialDrive = new DifferentialDrive(m_left0Talon, m_right0Talon);
   }
 
   @Override
