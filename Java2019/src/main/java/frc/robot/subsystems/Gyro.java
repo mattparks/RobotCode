@@ -9,13 +9,12 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Gyro extends Subsystem implements PIDSource {
-	private AHRS ahrs;
+	private AHRS m_ahrs;
 	
 	public Gyro() {
-		setName("Gyro");
-		
 		try {
-			ahrs = new AHRS(SPI.Port.kMXP);
+			m_ahrs = new AHRS(SPI.Port.kMXP);
+			reset();
 		} catch (RuntimeException e) {
 			DriverStation.reportError("Error instantiating navX MXP: " + e.getMessage(), true);
 		}
@@ -27,21 +26,21 @@ public class Gyro extends Subsystem implements PIDSource {
 	}
 
 	public double getAngle() {
-		return ahrs.getAngle();
+		return m_ahrs.getAngle();
 	}
 	
 	public void setAngle(double angle) {
-		ahrs.setAngleAdjustment(angle);
+		m_ahrs.setAngleAdjustment(angle);
 	}
 
 	@Override
 	public PIDSourceType getPIDSourceType() {
-		return ahrs.getPIDSourceType();
+		return m_ahrs.getPIDSourceType();
 	}
 
 	@Override
 	public void setPIDSourceType(PIDSourceType pidSource) {
-		ahrs.setPIDSourceType(pidSource);
+		m_ahrs.setPIDSourceType(pidSource);
 	}
 
 	@Override
@@ -50,6 +49,6 @@ public class Gyro extends Subsystem implements PIDSource {
 	}
 	
 	public void reset() {
-		ahrs.reset();
+		m_ahrs.reset();
 	}
 }

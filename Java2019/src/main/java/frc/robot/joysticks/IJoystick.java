@@ -45,9 +45,9 @@ public abstract class IJoystick extends Joystick {
 	 * A value that might represent a axis for a button.
 	 */
 	public static class ValueUsage {
-		public final int value;
-		public boolean inverted;
-		private IJoystickButton joystickButton;
+		public final int m_value;
+		public boolean m_inverted;
+		private IJoystickButton m_joystickButton;
 
 		/**
 		 * Creates a representation of a axis or a button. If used as a button {@link ValueUsage#joystickButton} will be created from {@link IJoystick#getJoystickButton}.
@@ -56,9 +56,9 @@ public abstract class IJoystick extends Joystick {
 		 * @param inverted If the state will be inverted, axis negated or button toggle being flipped.
 		 */
 		public ValueUsage(int value, boolean inverted) {
-			this.value = value;
-			this.inverted = inverted;
-			this.joystickButton = null;
+			m_value = value;
+			m_inverted = inverted;
+			m_joystickButton = null;
 		}
 		
 		/**
@@ -67,13 +67,13 @@ public abstract class IJoystick extends Joystick {
 		 * @param value The value that will be used as the axis number or button number.
 		 */
 		public ValueUsage(int value) {
-			this.value = value;
-			this.inverted = false;
-			this.joystickButton = null;
+			m_value = value;
+			m_inverted = false;
+			m_joystickButton = null;
 		}	
 	}
 	
-	private Map<String, ValueUsage> mappedUsages;
+	private Map<String, ValueUsage> m_mappedUsages;
 
 	/**
 	 * Creates a instances of the joystick on a driver station port.
@@ -82,7 +82,7 @@ public abstract class IJoystick extends Joystick {
 	 */
 	public IJoystick(int port) {
 		super(port);
-		mappedUsages = new HashMap<>();
+		m_mappedUsages = new HashMap<>();
 	}
 
 	/**
@@ -99,8 +99,8 @@ public abstract class IJoystick extends Joystick {
 	 * @param valueUsage The value given to the key.
 	 */
 	protected void add(String shortName, ValueUsage valueUsage) {
-		mappedUsages.remove(shortName); // Key should not be mutated while used in the map.
-		mappedUsages.put(shortName, valueUsage);
+		m_mappedUsages.remove(shortName); // Key should not be mutated while used in the map.
+		m_mappedUsages.put(shortName, valueUsage);
 	}
 
 	/**
@@ -110,14 +110,14 @@ public abstract class IJoystick extends Joystick {
 	 * @return The value found at the key, if not previously present a new object with {@link ValueUsage#value} of -1 is returned.
 	 */
 	public ValueUsage get(String shortName) {
-		if (!mappedUsages.containsKey(shortName)) {
+		if (!m_mappedUsages.containsKey(shortName)) {
 			ValueUsage valueUsage = new ValueUsage(-1, false);
-			DriverStation.reportError("IJoystick implementation missing usage for: " + mappedUsages, false);
+			DriverStation.reportError("IJoystick implementation missing usage for: " + m_mappedUsages, false);
 			add(shortName, valueUsage);
 			return valueUsage;
 		}
 		
-		return mappedUsages.get(shortName);
+		return m_mappedUsages.get(shortName);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public abstract class IJoystick extends Joystick {
 	 */
 	public double getRawAxis(String shortName) {
 		ValueUsage valueUsage = get(shortName);
-		return (valueUsage.inverted ? -1.0 : 1.0) * getRawAxis(valueUsage.value);
+		return (valueUsage.m_inverted ? -1.0 : 1.0) * getRawAxis(valueUsage.m_value);
 	}
 
 	/**
@@ -139,7 +139,7 @@ public abstract class IJoystick extends Joystick {
 	 */
 	public boolean getRawButton(String shortName) {
 		ValueUsage valueUsage = get(shortName);
-		return valueUsage.inverted != getRawButton(valueUsage.value);
+		return valueUsage.m_inverted != getRawButton(valueUsage.m_value);
 	}
 
 	/**
@@ -151,10 +151,10 @@ public abstract class IJoystick extends Joystick {
 	public IJoystickButton getJoystickButton(String shortName) {
 		ValueUsage valueUsage = get(shortName);
 		
-		if (valueUsage.joystickButton == null) {
-			valueUsage.joystickButton = new IJoystickButton(this, valueUsage.value);
+		if (valueUsage.m_joystickButton == null) {
+			valueUsage.m_joystickButton = new IJoystickButton(this, valueUsage.m_value);
 		}
 		
-		return valueUsage.joystickButton;
+		return valueUsage.m_joystickButton;
 	}
 }

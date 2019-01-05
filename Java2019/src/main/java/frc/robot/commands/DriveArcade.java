@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.RobotMap;
 
 public class DriveArcade extends Command {
 	public DriveArcade() {
@@ -14,8 +15,8 @@ public class DriveArcade extends Command {
 
 	@Override
 	protected void execute() {
-		double moveSpeed = Robot.m_oi.m_primary.getRawAxis("DriveForward");
-		double rotateSpeed = Robot.m_oi.m_primary.getRawAxis("DriveRotate");
+		double moveSpeed = RobotMap.Robot.DRIVE_SPEED * Robot.m_oi.m_primary.getRawAxis("DriveForward");
+		double rotateSpeed = RobotMap.Robot.DRIVE_SPEED * Robot.m_oi.m_primary.getRawAxis("DriveRotate");
 
 		Robot.m_drivetrain.arcadeDrive(moveSpeed, rotateSpeed);
 	}

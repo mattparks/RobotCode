@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.RobotMap;
 
 public class DriveTank extends Command {
 	public DriveTank() {
@@ -14,8 +15,8 @@ public class DriveTank extends Command {
 
 	@Override
 	protected void execute() {
-		double tankLeft = Robot.m_oi.m_primary.getRawAxis("DriveTankLeft");
-		double rankRight = Robot.m_oi.m_primary.getRawAxis("DriveTankRight");
+		double tankLeft = RobotMap.Robot.DRIVE_SPEED * Robot.m_oi.m_primary.getRawAxis("DriveTankLeft");
+		double rankRight = RobotMap.Robot.DRIVE_SPEED * Robot.m_oi.m_primary.getRawAxis("DriveTankRight");
 
 		Robot.m_drivetrain.tankDrive(tankLeft, rankRight);
 	}
