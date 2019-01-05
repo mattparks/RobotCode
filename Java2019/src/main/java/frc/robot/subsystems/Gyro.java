@@ -36,7 +36,7 @@ public class Gyro extends Subsystem implements PIDSource {
 
 	@Override
 	public PIDSourceType getPIDSourceType() {
-    	return ahrs.getPIDSourceType();
+		return ahrs.getPIDSourceType();
 	}
 
 	@Override

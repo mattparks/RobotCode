@@ -13,8 +13,8 @@ public class RobotMap {
 	public static class Driver {
 		public static final int PRIMARY_PORT = 0;
 		public static final int SECONDARY_PORT = 1;
-  }
-  
+	}
+	
 	/**
 	 * CAN ports that are set in the web panel
 	 */
@@ -25,5 +25,5 @@ public class RobotMap {
 		public static final int DRIVE_RIGHT_MASTER = 9;
 		public static final int DRIVE_RIGHT_NORMAL = 4;
 		public static final int DRIVE_RIGHT_MINI = 6;
-  }
+	}
 }
