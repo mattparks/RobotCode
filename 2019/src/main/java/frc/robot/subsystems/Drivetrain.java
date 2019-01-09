@@ -300,7 +300,7 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 
 	@Override
 	public void pidWrite(double output) {
-		Robot.m_drivetrain.setTarget(0.0, output, 0.0, 0.0);
+		// Ignored, commands will set the drivetrain targets.
 	}
 
 	public void setMode(SwerveMode swerveMode) {

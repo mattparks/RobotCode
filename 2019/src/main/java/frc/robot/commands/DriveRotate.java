@@ -21,6 +21,7 @@ public class DriveRotate extends Command {
 
 	@Override
 	protected void execute() {
+		Robot.m_drivetrain.setTarget(0.0, Robot.m_drivetrain.getControllerRotate().get(), 0.0, 0.0);
 	}
 
 	@Override

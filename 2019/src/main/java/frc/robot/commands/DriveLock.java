@@ -18,10 +18,6 @@ public class DriveLock extends Command {
 	protected void execute() {
 	}
 	
-	private double getAngle() {
-		return (double) Robot.m_oi.m_primary.getPOV() / (double) Robot.m_oi.m_primary.getPOVCount();
-	}
-
 	@Override
 	protected boolean isFinished() {
 		return false;

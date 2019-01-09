@@ -28,6 +28,8 @@ public class DrivePivot extends Command {
 			m_angle = newAngle;
 			Robot.m_drivetrain.setControllerRotate(m_angle);
 		}
+
+		Robot.m_drivetrain.setTarget(0.0, Robot.m_drivetrain.getControllerRotate().get(), 0.0, 0.0);
 	}
 	
 	private double getAngle() {
