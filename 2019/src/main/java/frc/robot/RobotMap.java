@@ -21,6 +21,8 @@ public class RobotMap {
 	 * Values that represent robot dimensions and limits.
 	 */
 	public static class Robot {
+		public static final double LED_BRIGHTNESS = 0.5;
+
 		public static final double WHEEL_DIAMETER = 0.1016; // m
 		public static final double WIDTH = 0.26; // m
 		public static final double DEPTH = 0.207; // m
@@ -66,15 +68,14 @@ public class RobotMap {
 	 * CAN ports that are set from the Phoenix control application.
 	 */
 	public static class CAN {
+		public static final int CANIFIER = 0;
+
 		public static final int DRIVE_FRONT_LEFT_DRIVE = 4;
 		public static final int DRIVE_FRONT_LEFT_ANGLE = 3;
-
 		public static final int DRIVE_FRONT_RIGHT_DRIVE = 1;
 		public static final int DRIVE_FRONT_RIGHT_ANGLE = 2;
-
 		public static final int DRIVE_BACK_LEFT_DRIVE = 5;
 		public static final int DRIVE_BACK_LEFT_ANGLE = 6;
-
 		public static final int DRIVE_BACK_RIGHT_DRIVE = 8;
 		public static final int DRIVE_BACK_RIGHT_ANGLE = 7;
 	}
