@@ -4,10 +4,9 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
-public class DrivePath extends Command {
-	public DrivePath(String pathGroup) {
+public class DriveArcade extends Command {
+	public DriveArcade() {
 		requires(Robot.m_drivetrain);
-	//	FileUtilities.getFilePath();
 	}
 
 	@Override
@@ -16,8 +15,10 @@ public class DrivePath extends Command {
 
 	@Override
 	protected void execute() {
+		double moveSpeed = RobotMap.Robot.DRIVE_SPEED * Robot.m_oi.m_primary.getRawAxis("DriveForward");
+		double rotateSpeed = RobotMap.Robot.DRIVE_SPEED * Robot.m_oi.m_primary.getRawAxis("DriveRotate");
 
-		Robot.m_drivetrain.tankDrive(left, right);
+		Robot.m_drivetrain.arcadeDrive(moveSpeed, rotateSpeed);
 	}
 
 	@Override
@@ -27,7 +28,7 @@ public class DrivePath extends Command {
 
 	@Override
 	protected void end() {
-		Robot.m_drivetrain.tankDrive(0.0, 0.0);
+		Robot.m_drivetrain.arcadeDrive(0.0, 0.0);
 	}
 
 	@Override
