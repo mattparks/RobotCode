@@ -1,5 +1,7 @@
 package frc.robot;
 
+import frc.robot.commands.DriveLock;
+import frc.robot.commands.DrivePivot;
 import frc.robot.joysticks.IJoystick;
 import frc.robot.joysticks.JoystickExtreme;
 import frc.robot.joysticks.JoystickF310;
@@ -16,5 +18,7 @@ public class OI {
 	 * Binds physical controls to commands and command groups.
 	 */
 	public OI() {
+		m_primary.getJoystickButton("DriveLock").whileHeld(new DriveLock());
+		m_primary.getJoystickButton("Pivot").whileHeld(new DrivePivot());
 	}
 }

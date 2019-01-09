@@ -2,12 +2,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
 
-public class DrivePath extends Command {
-	public DrivePath(String pathGroup) {
+public class DriveReset extends Command {
+	public DriveReset() {
 		requires(Robot.m_drivetrain);
-	//	FileUtilities.getFilePath();
+		requires(Robot.m_gyro);
 	}
 
 	@Override
@@ -16,8 +15,8 @@ public class DrivePath extends Command {
 
 	@Override
 	protected void execute() {
-
-		Robot.m_drivetrain.tankDrive(left, right);
+		Robot.m_drivetrain.reset();
+		Robot.m_gyro.reset();
 	}
 
 	@Override
@@ -27,7 +26,6 @@ public class DrivePath extends Command {
 
 	@Override
 	protected void end() {
-		Robot.m_drivetrain.tankDrive(0.0, 0.0);
 	}
 
 	@Override

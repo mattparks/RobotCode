@@ -14,7 +14,7 @@ import frc.robot.Maths;
 import frc.robot.PID;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.commands.DriveSwerve;
+import frc.robot.commands.DriveArcade;
 import frc.robot.commands.DriveReset;
 
 public class Drivetrain extends Subsystem implements PIDOutput {
@@ -64,7 +64,7 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 			this.setpointAngle = 0.0;
 			this.setpointDrive = 0.0;
 			this.swerveMode = SwerveMode.ModeSpeed;
-			
+
 			if (!enabled) {
 				DriverStation.reportError("Module is set to be disabled: " + name, false);
 			}
@@ -181,22 +181,22 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 	}
 	
 	private SwerveModule frontLeft = new SwerveModule(
-		"Front Left", RobotMap.Robot.DRIVE_ENABLED_FRONT_LEFT, 
+		"Front Left", true, 
 		RobotMap.CAN.DRIVE_FRONT_LEFT_ANGLE, RobotMap.CAN.DRIVE_FRONT_LEFT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_FRONT_LEFT
 	);
 	private SwerveModule frontRight = new SwerveModule(
-		"Front Right", RobotMap.Robot.DRIVE_ENABLED_FRONT_RIGHT, 
+		"Front Right", true, 
 		RobotMap.CAN.DRIVE_FRONT_RIGHT_ANGLE, RobotMap.CAN.DRIVE_FRONT_RIGHT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_FRONT_RIGHT
 	);
 	private SwerveModule backLeft = new SwerveModule(
-		"Back Left", RobotMap.Robot.DRIVE_ENABLED_BACK_LEFT, 
+		"Back Left", true, 
 		RobotMap.CAN.DRIVE_BACK_LEFT_ANGLE, RobotMap.CAN.DRIVE_BACK_LEFT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_BACK_LEFT
 	);
 	private SwerveModule backRight = new SwerveModule(
-		"Back Right", RobotMap.Robot.DRIVE_ENABLED_BACK_RIGHT, 
+		"Back Right", true, 
 		RobotMap.CAN.DRIVE_BACK_RIGHT_ANGLE, RobotMap.CAN.DRIVE_BACK_RIGHT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_BACK_RIGHT
 	);
@@ -213,7 +213,7 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		
 		DriverStation.reportError("Is FMS Attached: " + DriverStation.getInstance().isFMSAttached(), false);
 
-		if (!(RobotMap.Robot.TESTING_MODE && !DriverStation.getInstance().isFMSAttached())) {
+		if (DriverStation.getInstance().isFMSAttached()) {
 			recalibrate();
 		}
 	}
@@ -222,7 +222,7 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 	public void initDefaultCommand() {
 		SmartDashboard.putData("Drive Reset", new DriveReset());
 
-		setDefaultCommand(new DriveSwerve());
+		setDefaultCommand(new DriveArcade());
 	}
 	
 	public void setTarget(double gyro, double rotation, double strafe, double forward) {
@@ -235,8 +235,8 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		double str2 = (-forward * Math.sin(gyro)) + strafe * Math.cos(gyro);
 
 		double r = RobotMap.Robot.RATIO / 2.0;
-		double a = str2 - rotation * ((RobotMap.Robot.LENGTH / r) * 0.5);
-		double b = str2 + rotation * ((RobotMap.Robot.LENGTH / r) * 0.5);
+		double a = str2 - rotation * ((RobotMap.Robot.DEPTH / r) * 0.5);
+		double b = str2 + rotation * ((RobotMap.Robot.DEPTH / r) * 0.5);
 		double c = fwd2 - rotation * ((RobotMap.Robot.WIDTH / r) * 0.5);
 		double d = fwd2 + rotation * ((RobotMap.Robot.WIDTH / r) * 0.5);
 
@@ -287,6 +287,7 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 
 	@Override
 	public void pidWrite(double output) {
+		Robot.m_drivetrain.setTarget(0.0, output, 0.0, 0.0);
 	}
 
 	public void setMode(SwerveMode swerveMode) {
@@ -301,9 +302,12 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 	}
 	
 	public void setControllerRotate(double setpoint) {
-		controllerRotate.reset();
+		if (!controllerRotate.isEnabled()) {
+			controllerRotate.reset();
+			controllerRotate.enable();
+		}
+		
 		controllerRotate.setSetpoint(setpoint);
-		controllerRotate.enable();
 	}
 	
 	public void recalibrate() {

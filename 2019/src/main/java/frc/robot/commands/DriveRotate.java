@@ -4,29 +4,28 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drivetrain.SwerveMode;
 
-public class DriveArcade extends Command {
-	public DriveArcade() {
+public class DriveRotate extends Command {
+	private double m_angle;
+
+	public DriveRotate(double angle) {
 		requires(Robot.m_drivetrain);
+		m_angle = angle;
 	}
 
 	@Override
 	protected void initialize() {
 		Robot.m_drivetrain.reset();
 		Robot.m_drivetrain.setMode(SwerveMode.ModeSpeed);
+		Robot.m_drivetrain.setControllerRotate(m_angle);
 	}
 
 	@Override
 	protected void execute() {
-		double gyro = Math.toRadians(Robot.m_gyro.getAngle());
-		double rotation = Robot.m_oi.m_primary.getRawAxis("DriveRotation");
-		double strafe = Robot.m_oi.m_primary.getRawAxis("DriveStrafe");
-		double forward = Robot.m_oi.m_primary.getRawAxis("DriveForward");
-		Robot.m_drivetrain.setTarget(gyro, rotation, strafe, forward);
 	}
 
 	@Override
 	protected boolean isFinished() {
-		return false;
+		return Robot.m_drivetrain.getControllerRotate().onTarget() || timeSinceInitialized() > 2.0;
 	}
 
 	@Override
