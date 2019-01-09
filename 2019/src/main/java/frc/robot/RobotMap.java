@@ -21,6 +21,7 @@ public class RobotMap {
 	 * Values that represent robot dimensions and limits.
 	 */
 	public static class Robot {
+		public static final double WHEEL_DIAMETER = 0.1016; // m
 		public static final double WIDTH = 0.26; // m
 		public static final double DEPTH = 0.207; // m
 		public static final double RATIO = Math.sqrt((DEPTH * DEPTH) + (WIDTH * WIDTH));

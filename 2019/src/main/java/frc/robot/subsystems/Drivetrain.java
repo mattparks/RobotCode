@@ -23,193 +23,206 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		ModeRate(ControlMode.Velocity, RobotMap.PIDs.DRIVE_MODE_RATE), 
 		ModeDistance(ControlMode.Position, RobotMap.PIDs.DRIVE_MODE_DISTANCE);
 		
-		private final ControlMode controlMode;
-		private final PID pidDrive;
+		private final ControlMode m_controlMode;
+		private final PID m_pidDrive;
 		
 		private SwerveMode(ControlMode controlMode, PID pidDrive) {
-			this.controlMode = controlMode;
-			this.pidDrive = pidDrive;
+			m_controlMode = controlMode;
+			m_pidDrive = pidDrive;
 		//	SmartDashboard.putData(pidDrive);
 		}
 		
 		public ControlMode getControlMode() {
-			return controlMode;
+			return m_controlMode;
 		}
 
 		public PID getPidDrive() {
-			return pidDrive;
+			return m_pidDrive;
 		}
 	}
 
 	public class SwerveModule {
-		private String moduleName;
-		private boolean enabled;
-		private WPI_TalonSRX talonAngle;
-		private WPI_TalonSRX talonDrive;
-		private double currentAngle;
-		private double currentPosition;
-		private double currentVelocity;
-		private double setpointAngle;
-		private double setpointDrive;
-		private SwerveMode swerveMode;
+		private String m_name;
+		private boolean m_enabled;
+		private WPI_TalonSRX m_talonAngle;
+		private WPI_TalonSRX m_talonDrive;
+		private double m_currentAngle;
+		private double m_currentPosition;
+		private double m_currentVelocity;
+		private double m_setpointAngle;
+		private double m_setpointDrive;
+		private SwerveMode m_swerveMode;
 
 		public SwerveModule(String name, boolean enabled, int portAngle, int portDrive, PID pidAngle) {
-			this.moduleName = name;
-			this.enabled = enabled;
-			this.talonAngle = new WPI_TalonSRX(portAngle);
-			this.talonDrive = new WPI_TalonSRX(portDrive);
-			this.currentAngle = 0.0;
-			this.currentPosition = 0.0;
-			this.currentVelocity = 0.0;
-			this.setpointAngle = 0.0;
-			this.setpointDrive = 0.0;
-			this.swerveMode = SwerveMode.ModeSpeed;
+			m_name = name;
+			m_enabled = enabled;
+			m_talonAngle = new WPI_TalonSRX(portAngle);
+			m_talonDrive = new WPI_TalonSRX(portDrive);
+			m_currentAngle = 0.0;
+			m_currentPosition = 0.0;
+			m_currentVelocity = 0.0;
+			m_setpointAngle = 0.0;
+			m_setpointDrive = 0.0;
+			m_swerveMode = SwerveMode.ModeSpeed;
 
 			if (!enabled) {
 				DriverStation.reportError("Module is set to be disabled: " + name, false);
 			}
 			
-			talonAngle.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
-			talonAngle.config_kP(RobotMap.kPIDLoopIdx, pidAngle.getP(), RobotMap.kTimeoutMs);
-			talonAngle.config_kI(RobotMap.kPIDLoopIdx, pidAngle.getI(), RobotMap.kTimeoutMs);
-			talonAngle.config_kD(RobotMap.kPIDLoopIdx, pidAngle.getD(), RobotMap.kTimeoutMs);
-			talonAngle.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, RobotMap.kTimeoutMs);
-			talonAngle.enableCurrentLimit(false);
-			talonAngle.configPeakCurrentDuration(0, RobotMap.kTimeoutMs); // 10
-			talonAngle.configPeakCurrentLimit(0, RobotMap.kTimeoutMs); // 30
+			m_talonAngle.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
+			m_talonAngle.config_kP(RobotMap.kPIDLoopIdx, pidAngle.getP(), RobotMap.kTimeoutMs);
+			m_talonAngle.config_kI(RobotMap.kPIDLoopIdx, pidAngle.getI(), RobotMap.kTimeoutMs);
+			m_talonAngle.config_kD(RobotMap.kPIDLoopIdx, pidAngle.getD(), RobotMap.kTimeoutMs);
+			m_talonAngle.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, RobotMap.kTimeoutMs);
+			m_talonAngle.enableCurrentLimit(false);
+			m_talonAngle.configPeakCurrentDuration(0, RobotMap.kTimeoutMs); // 10
+			m_talonAngle.configPeakCurrentLimit(0, RobotMap.kTimeoutMs); // 30
 			
-			talonDrive.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
-			talonDrive.setSensorPhase(false); // true
-			talonDrive.configClosedloopRamp(0.0, RobotMap.kTimeoutMs); // 0.08
-			talonDrive.configOpenloopRamp(0.0, RobotMap.kTimeoutMs); // 0.08
-			talonDrive.enableCurrentLimit(false);
-			talonDrive.configPeakCurrentDuration(0, RobotMap.kTimeoutMs); // 10
-			talonDrive.configPeakCurrentLimit(0, RobotMap.kTimeoutMs); // 40
+			m_talonDrive.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
+			m_talonDrive.setSensorPhase(false); // true
+			m_talonDrive.configClosedloopRamp(0.0, RobotMap.kTimeoutMs); // 0.08
+			m_talonDrive.configOpenloopRamp(0.0, RobotMap.kTimeoutMs); // 0.08
+			m_talonDrive.enableCurrentLimit(false);
+			m_talonDrive.configPeakCurrentDuration(0, RobotMap.kTimeoutMs); // 10
+			m_talonDrive.configPeakCurrentLimit(0, RobotMap.kTimeoutMs); // 40
 			
-		//	int absolutePosition = talonAngle.getSensorCollection().getPulseWidthPosition() & 0xFFF; 
-		//	talonAngle.getSensorCollection().setPulseWidthPosition(absolutePosition, RobotMap.kTimeoutMs); // talonAngle.setEncPosition(absolutePosition);
+		//	int absolutePosition = m_talonAngle.getSensorCollection().getPulseWidthPosition() & 0xFFF; 
+		//	m_talonAngle.getSensorCollection().setPulseWidthPosition(absolutePosition, RobotMap.kTimeoutMs); // talonAngle.setEncPosition(absolutePosition);
 		}
 
 		public void setTarget(double angle, double drive, boolean driverControl) {
-			if (!enabled) {
+			if (!m_enabled) {
 				return;
 			}
 			
-			currentAngle = talonAngle.getSelectedSensorPosition(RobotMap.kPIDLoopIdx);
-			currentPosition = talonDrive.getSelectedSensorPosition(RobotMap.kPIDLoopIdx);
-			currentVelocity = talonDrive.getSelectedSensorVelocity(RobotMap.kPIDLoopIdx);
+			// Gets the sensor values.
+			m_currentAngle = m_talonAngle.getSelectedSensorPosition(RobotMap.kPIDLoopIdx);
+			m_currentPosition = m_talonDrive.getSelectedSensorPosition(RobotMap.kPIDLoopIdx);
+			m_currentVelocity = m_talonDrive.getSelectedSensorVelocity(RobotMap.kPIDLoopIdx);
 	
-			setpointAngle = -angle;
-			setpointDrive = drive;
+			// Sets the setpoint, on 537 swerve angles are negated.
+			m_setpointAngle = -angle;
+			m_setpointDrive = drive;
 			
-			setpointAngle = 4096.0 * (setpointAngle / 360.0);
-			double angleError = currentAngle - setpointAngle;
+			// Calculates the setpoint in encoder ticks.
+			m_setpointAngle = 4096.0 * (m_setpointAngle / 360.0);
+			double angleError = m_currentAngle - m_setpointAngle;
 			
+			// If the setpoint error is half a rotation ahead or behind modify range for closer setpoint.
 			if (angleError < -2048.0) {
-				setpointAngle -= 4096.0;
+				m_setpointAngle -= 4096.0;
 			} else if (angleError > 2048.0) {
-				setpointAngle += 4096.0;
+				m_setpointAngle += 4096.0;
 			}
 			
+			// If the driver lets go of the control don't set angle, 0.0 will be imposible to reach on a controller.
 			if (!driverControl || angle != 0.0) {
-				talonAngle.set(ControlMode.Position, setpointAngle);
+				m_talonAngle.set(ControlMode.Position, m_setpointAngle);
 			}
 			
-			talonDrive.set(swerveMode.getControlMode(), setpointDrive);
+			m_talonDrive.set(m_swerveMode.getControlMode(), m_setpointDrive);
 		}
 		
+		public double getAngle() {
+			return 360.0 * (m_currentAngle / 4096.0); // degrees
+		}
+
+		public double getPosition() {
+			return m_currentPosition; // ticks
+		}
+
+		public double getVelocity() {
+			return m_currentVelocity; // ticks/s
+		}
+
 		public SwerveMode getMode() {
-			return this.swerveMode;
+			return m_swerveMode;
 		}
 		
 		public void setMode(SwerveMode swerveMode) {
-			talonDrive.config_kP(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getP(), RobotMap.kTimeoutMs);
-			talonDrive.config_kI(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getI(), RobotMap.kTimeoutMs);
-			talonDrive.config_kD(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getD(), RobotMap.kTimeoutMs);
-			talonDrive.config_kF(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getF(), RobotMap.kTimeoutMs);
+			m_talonDrive.config_kP(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getP(), RobotMap.kTimeoutMs);
+			m_talonDrive.config_kI(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getI(), RobotMap.kTimeoutMs);
+			m_talonDrive.config_kD(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getD(), RobotMap.kTimeoutMs);
+			m_talonDrive.config_kF(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getF(), RobotMap.kTimeoutMs);
 	
-			this.swerveMode = swerveMode;
+			m_swerveMode = swerveMode;
 		}
 		
 		public void resetAngleReading() {
-			talonAngle.setSelectedSensorPosition(0, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
+			m_talonAngle.setSelectedSensorPosition(0, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
 		}
 		
 		public double getSetpointDrive() {
-			return setpointDrive;
+			return m_setpointDrive;
 		}
 		
 		public boolean isAtTarget() {
-			if (!enabled) {
+			if (!m_enabled) {
 				return true;
 			}
 			
-			switch (swerveMode) {
+			switch (m_swerveMode) {
 				case ModeSpeed:
-					return true;
+					return true; // Speed is a setpoint value and cannot be measured from the module.
 				case ModeRate:
-					return nearTarget((double) talonDrive.getSelectedSensorVelocity(RobotMap.kPIDLoopIdx), setpointDrive, 0.06 * RobotMap.Robot.DRIVE_M_TO_ENCODER);
+					return Maths.nearTarget((double) m_talonDrive.getSelectedSensorVelocity(RobotMap.kPIDLoopIdx), m_setpointDrive, 0.06 * RobotMap.Robot.DRIVE_M_TO_ENCODER);
 				case ModeDistance:
-					return nearTarget((double) talonDrive.getSelectedSensorPosition(RobotMap.kPIDLoopIdx), setpointDrive, 0.08 * RobotMap.Robot.DRIVE_M_TO_ENCODER);
+					return Maths.nearTarget((double) m_talonDrive.getSelectedSensorPosition(RobotMap.kPIDLoopIdx), m_setpointDrive, 0.08 * RobotMap.Robot.DRIVE_M_TO_ENCODER);
 				default:
 					return true;
 			}
 		}
 		
 		public boolean isAtAngle(double error) {
-			if (!enabled) {
+			if (!m_enabled) {
 				return true;
 			}
 			
-			return nearTarget((double) talonAngle.getSelectedSensorPosition(RobotMap.kPIDLoopIdx), setpointAngle, 4096.0 * (error / 360.0));
-		}
-	
-		private boolean nearTarget(double value, double target, double tolerance) {
-			return Math.abs(value - target) < tolerance;
+			// Gets if the error is within the bounds provided.
+			return Maths.nearTarget((double) m_talonAngle.getSelectedSensorPosition(RobotMap.kPIDLoopIdx), m_setpointAngle, 4096.0 * (error / 360.0));
 		}
 
 		public void reset() {
-			talonDrive.setSelectedSensorPosition(0, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
+			m_talonDrive.setSelectedSensorPosition(0, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
 			stop();
 		}
 	
 		public void stop() {
-			talonDrive.set(ControlMode.PercentOutput, 0.0);
-			swerveMode = SwerveMode.ModeSpeed;
+			m_talonDrive.set(ControlMode.PercentOutput, 0.0);
+			m_swerveMode = SwerveMode.ModeSpeed;
 		}
-	
 	}
 	
-	private SwerveModule frontLeft = new SwerveModule(
+	public SwerveModule m_frontLeft = new SwerveModule(
 		"Front Left", true, 
 		RobotMap.CAN.DRIVE_FRONT_LEFT_ANGLE, RobotMap.CAN.DRIVE_FRONT_LEFT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_FRONT_LEFT
 	);
-	private SwerveModule frontRight = new SwerveModule(
+	public SwerveModule m_frontRight = new SwerveModule(
 		"Front Right", true, 
 		RobotMap.CAN.DRIVE_FRONT_RIGHT_ANGLE, RobotMap.CAN.DRIVE_FRONT_RIGHT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_FRONT_RIGHT
 	);
-	private SwerveModule backLeft = new SwerveModule(
+	public SwerveModule m_backLeft = new SwerveModule(
 		"Back Left", true, 
 		RobotMap.CAN.DRIVE_BACK_LEFT_ANGLE, RobotMap.CAN.DRIVE_BACK_LEFT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_BACK_LEFT
 	);
-	private SwerveModule backRight = new SwerveModule(
+	public SwerveModule m_backRight = new SwerveModule(
 		"Back Right", true, 
 		RobotMap.CAN.DRIVE_BACK_RIGHT_ANGLE, RobotMap.CAN.DRIVE_BACK_RIGHT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_BACK_RIGHT
 	);
-	private PIDController controllerRotate;
+	private PIDController m_controllerRotate;
 
 	public Drivetrain() {
-		this.controllerRotate = new PIDController(RobotMap.PIDs.DRIVE_ROTATE.getP(), RobotMap.PIDs.DRIVE_ROTATE.getI(), RobotMap.PIDs.DRIVE_ROTATE.getD(),
-				Robot.m_gyro, this);
-		this.controllerRotate.setInputRange(0.0, 360.0);
-		this.controllerRotate.setOutputRange(-0.5, 0.5);
-		this.controllerRotate.setPercentTolerance(0.07);
-		this.controllerRotate.setContinuous();
-		this.controllerRotate.disable();
+		m_controllerRotate = new PIDController(RobotMap.PIDs.DRIVE_ROTATE.getP(), RobotMap.PIDs.DRIVE_ROTATE.getI(), RobotMap.PIDs.DRIVE_ROTATE.getD(),
+			Robot.m_gyro, this);
+		m_controllerRotate.setInputRange(0.0, 360.0);
+		m_controllerRotate.setOutputRange(-0.5, 0.5);
+		m_controllerRotate.setPercentTolerance(0.07);
+		m_controllerRotate.setContinuous();
+		m_controllerRotate.disable();
 		
 		DriverStation.reportError("Is FMS Attached: " + DriverStation.getInstance().isFMSAttached(), false);
 
@@ -226,8 +239,8 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 	}
 	
 	public void setTarget(double gyro, double rotation, double strafe, double forward) {
-		if (controllerRotate.isEnabled()) {
-			rotation = controllerRotate.get();
+		if (m_controllerRotate.isEnabled()) {
+			rotation = m_controllerRotate.get();
 		}
 
 		boolean driverControl = isDriverControl();
@@ -240,36 +253,36 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		double c = fwd2 - rotation * ((RobotMap.Robot.WIDTH / r) * 0.5);
 		double d = fwd2 + rotation * ((RobotMap.Robot.WIDTH / r) * 0.5);
 
-		double frs = Math.sqrt((b * b) + (c * c));
 		double fls = Math.sqrt((a * a) + (c * c));
+		double frs = Math.sqrt((b * b) + (c * c));
 		double bls = Math.sqrt((a * a) + (d * d));
 		double brs = Math.sqrt((b * b) + (d * d));
 		
-		double fra = Math.atan2(b, c) * (180.0 / Math.PI);
 		double fla = Math.atan2(b, d) * (180.0 / Math.PI);
+		double fra = Math.atan2(b, c) * (180.0 / Math.PI);
 		double bla = Math.atan2(a, d) * (180.0 / Math.PI);
 		double bra = Math.atan2(a, c) * (180.0 / Math.PI);
 
-		double maxSpeed = Maths.maxValue(frs, fls, bls, brs);
+		double maxSpeed = Maths.maxValue(fls, frs, bls, brs);
 
 		if (maxSpeed > 1.0) {
-			frs /= maxSpeed;
 			fls /= maxSpeed;
+			frs /= maxSpeed;
 			bls /= maxSpeed;
 			brs /= maxSpeed;
 		}
 		
 		if ((driverControl && !isAtAngle(60.0)) || (!driverControl && !isAtAngle(8.0))) {
-			frs = 0.0;
 			fls = 0.0;
+			frs = 0.0;
 			bls = 0.0;
 			brs = 0.0;
 		}
 
-		frontRight.setTarget(fra, frs * RobotMap.Robot.DRIVE_SPEED, driverControl);
-		frontLeft.setTarget(fla, fls * RobotMap.Robot.DRIVE_SPEED, driverControl);
-		backLeft.setTarget(bla, bls * RobotMap.Robot.DRIVE_SPEED, driverControl);
-		backRight.setTarget(bra, brs * RobotMap.Robot.DRIVE_SPEED, driverControl);
+		m_frontLeft.setTarget(fla, fls * RobotMap.Robot.DRIVE_SPEED, driverControl);
+		m_frontRight.setTarget(fra, frs * RobotMap.Robot.DRIVE_SPEED, driverControl);
+		m_backLeft.setTarget(bla, bls * RobotMap.Robot.DRIVE_SPEED, driverControl);
+		m_backRight.setTarget(bra, brs * RobotMap.Robot.DRIVE_SPEED, driverControl);
 	}
 
 	public void setTarget(double gyro, double angle, double forward) {
@@ -279,10 +292,10 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		//	forward = 0.0;
 		//}
 		
-		frontRight.setTarget(f, forward, false);
-		frontLeft.setTarget(f, forward, false);
-		backLeft.setTarget(f, forward, false);
-		backRight.setTarget(f, forward, false);
+		m_frontRight.setTarget(f, forward, false);
+		m_frontLeft.setTarget(f, forward, false);
+		m_backLeft.setTarget(f, forward, false);
+		m_backRight.setTarget(f, forward, false);
 	}
 
 	@Override
@@ -291,60 +304,60 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 	}
 
 	public void setMode(SwerveMode swerveMode) {
-		frontRight.setMode(swerveMode);
-		frontLeft.setMode(swerveMode);
-		backLeft.setMode(swerveMode);
-		backRight.setMode(swerveMode);
+		m_frontRight.setMode(swerveMode);
+		m_frontLeft.setMode(swerveMode);
+		m_backLeft.setMode(swerveMode);
+		m_backRight.setMode(swerveMode);
 	}
 
 	public PIDController getControllerRotate() {
-		return controllerRotate;
+		return m_controllerRotate;
 	}
 	
 	public void setControllerRotate(double setpoint) {
-		if (!controllerRotate.isEnabled()) {
-			controllerRotate.reset();
-			controllerRotate.enable();
+		if (!m_controllerRotate.isEnabled()) {
+			m_controllerRotate.reset();
+			m_controllerRotate.enable();
 		}
 		
-		controllerRotate.setSetpoint(setpoint);
+		m_controllerRotate.setSetpoint(setpoint);
 	}
 	
 	public void recalibrate() {
-		backLeft.resetAngleReading();
-		backRight.resetAngleReading();
-		frontLeft.resetAngleReading();
-		frontRight.resetAngleReading();
+		m_backLeft.resetAngleReading();
+		m_backRight.resetAngleReading();
+		m_frontLeft.resetAngleReading();
+		m_frontRight.resetAngleReading();
 	}
 
 	public boolean isAtTarget() {
-		return frontRight.isAtTarget() && frontLeft.isAtTarget() && backLeft.isAtTarget() && backRight.isAtTarget();
+		return m_frontRight.isAtTarget() && m_frontLeft.isAtTarget() && m_backLeft.isAtTarget() && m_backRight.isAtTarget();
 	}
 	
 	public boolean isAtAngle(double error) {
-		return frontRight.isAtAngle(error) && frontLeft.isAtAngle(error) && backLeft.isAtAngle(error) && backRight.isAtAngle(error);
+		return m_frontRight.isAtAngle(error) && m_frontLeft.isAtAngle(error) && m_backLeft.isAtAngle(error) && m_backRight.isAtAngle(error);
 	}
 	
 	public boolean isDriverControl() {
-		return frontRight.getMode() == SwerveMode.ModeSpeed;
+		return m_frontRight.getMode() == SwerveMode.ModeSpeed;
 	}
 	
 	public double getAverageSpeed() {
-		return (frontRight.getSetpointDrive() + frontLeft.getSetpointDrive() + backLeft.getSetpointDrive() + backRight.getSetpointDrive()) / 4.0;
+		return (m_frontRight.getSetpointDrive() + m_frontLeft.getSetpointDrive() + m_backLeft.getSetpointDrive() + m_backRight.getSetpointDrive()) / 4.0;
 	}
 	
 	public void reset() {
-		backLeft.reset();
-		backRight.reset();
-		frontLeft.reset();
-		frontRight.reset();
+		m_backLeft.reset();
+		m_backRight.reset();
+		m_frontLeft.reset();
+		m_frontRight.reset();
 	}
 	
 	public void stop() {
-		controllerRotate.disable();
-		backLeft.stop();
-		backRight.stop();
-		frontLeft.stop();
-		frontRight.stop();
+		m_controllerRotate.disable();
+		m_backLeft.stop();
+		m_backRight.stop();
+		m_frontLeft.stop();
+		m_frontRight.stop();
 	}
 }
