@@ -12,7 +12,7 @@ import frc.robot.subsystems.Lights;
 
 public class Robot extends TimedRobot {
 	public static Gyro m_gyro = new Gyro();
-	public static Lights m_lights = new Lights();
+	public static Lights m_lights = null; // new Lights();
 	public static Drivetrain m_drivetrain = new Drivetrain();
 	public static OI m_oi;
 
