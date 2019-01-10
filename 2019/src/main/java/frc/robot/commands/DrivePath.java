@@ -2,7 +2,16 @@ package frc.robot.commands;
 
 import java.io.File;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.PID;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Drivetrain.SwerveMode;
@@ -22,7 +31,8 @@ public class DrivePath extends Command {
 			m_trajectory = trajectory;
 			m_follower = new EncoderFollower(m_trajectory);
 			m_follower.configureEncoder(0, 4098, RobotMap.Robot.WHEEL_DIAMETER);
-			m_follower.configurePIDVA(1.0, 0.0, 0.0, 1.0 / RobotMap.Robot.MAX_VELOCITY, 0.0);
+			PID pid = RobotMap.PIDs.DRIVE_PATH;
+			m_follower.configurePIDVA(pid.getP(), pid.getI(), pid.getD(), RobotMap.Robot.DRIVE_PATH_SCALE * (1.0 / RobotMap.Robot.MAX_VELOCITY), 0.0);
 		}
 
 		public void calculate(double encoderPosition) {
@@ -61,11 +71,44 @@ public class DrivePath extends Command {
 	}
 
 	public DrivePath(String filepath) {
-		this(Pathfinder.readFromCSV(new File("/home/lvuser/deploy/" + filepath))); // TODO: Use FileUtilities.getFilePath();
+		this(readFromXML(new File("/home/lvuser/deploy/" + filepath))); // TODO: Use FileUtilities.getFilePath();
 	}
 
 	public DrivePath(Waypoint[] points) {
 		this(Pathfinder.generate(points, RobotMap.Robot.TRAJECTORY_CONFIG));
+	}
+
+	private static Waypoint[] readFromXML(File file) {
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(file);
+			document.getDocumentElement().normalize();
+
+			// Path data defined in the XML is ignored, the path is the only data we look for.
+			System.out.println("Root element :" + document.getDocumentElement().getNodeName());
+
+			NodeList nodeList = document.getElementsByTagName("Waypoint");
+			Waypoint[] waypoints = new Waypoint[nodeList.getLength()];
+			
+			for (int temp = 0; temp < nodeList.getLength(); temp++) {
+				Node node = nodeList.item(temp);
+				
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					Element element = (Element) node;
+					double x = Double.parseDouble(element.getElementsByTagName("X").item(0).getTextContent());
+					double y = Double.parseDouble(element.getElementsByTagName("Y").item(0).getTextContent());
+					double angle = Double.parseDouble(element.getElementsByTagName("Angle").item(0).getTextContent());
+					waypoints[temp] = new Waypoint(x, y, Pathfinder.d2r(angle));
+				}
+			}
+
+			return waypoints;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	@Override

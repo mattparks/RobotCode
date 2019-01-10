@@ -30,8 +30,10 @@ public class RobotMap {
 
 		public static final double DRIVE_M_TO_ENCODER = 1984.4878; // ticks/m
 		public static final double DRIVE_SPEED = 0.8; // % 0-1.0
+		
+		public static final double DRIVE_PATH_SCALE = 0.4; // % -1.0-1.0 speed scale for the pathfinder
 
-		public static final double MAX_VELOCITY = 1.7; // m/s
+		public static final double MAX_VELOCITY = 1.7; // m/s (maximum robot velocity the robot is capable of)
 		public static final double MAX_ACCELERATION = 2.0; // m/s/s
 		public static final double MAX_JERK = 60.0; // m/s/s/s
 		public static final Trajectory.Config TRAJECTORY_CONFIG = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, 
@@ -46,6 +48,8 @@ public class RobotMap {
 		public static final PID DRIVE_ANGLE_FRONT_RIGHT = new PID(3.8, 0.0, 4.0, "PID Front Right");
 		public static final PID DRIVE_ANGLE_BACK_LEFT = new PID(5.4, 0.0, 4.3, "PID Back Left");
 		public static final PID DRIVE_ANGLE_BACK_RIGHT = new PID(5.4, 0.0, 4.3, "PID Back Right");
+
+		public static final PID DRIVE_PATH = new PID(1.0, 0.0, 0.0, "PID Path");
 
 		public static final PID DRIVE_ROTATE = new PID(0.01, 0.0, 0.002, "PID Rotate");
 		public static final PID DRIVE_MODE_SPEED = new PID(0.0, 0.0, 0.0, "PID Mode Speed");
