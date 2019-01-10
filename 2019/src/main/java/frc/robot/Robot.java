@@ -23,9 +23,9 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		m_oi = new OI();
 		m_chooserPath.setDefaultOption("None", null);
-		m_chooserPath.addOption("Left Hatch 1", "PathWeaver/Paths/Hatch 1.path");
-		m_chooserPath.addOption("Left Hatch 2", "PathWeaver/Paths/Hatch 2.path");
-		m_chooserPath.addOption("Left Hatch 3", "PathWeaver/Paths/Hatch 3.path");
+		m_chooserPath.addOption("Left Hatch 1", "LeftHatch1/LeftHatch1.csv");
+		m_chooserPath.addOption("Left Hatch 2", "LeftHatch1/LeftHatch2.csv");
+		m_chooserPath.addOption("Left Hatch 3", "LeftHatch1/LeftHatch3.csv");
 		SmartDashboard.putData("Auto Path", m_chooserPath);
 	}
 

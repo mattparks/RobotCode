@@ -30,6 +30,10 @@ public class DrivePath extends Command {
 			m_angle = Pathfinder.boundHalfDegrees(Pathfinder.r2d(m_follower.getHeading()));
 		}
 
+		public void reset() {
+			m_follower.reset();
+		}
+
 		public boolean isFinished() {
 			return m_follower.isFinished();
 		}
@@ -57,7 +61,7 @@ public class DrivePath extends Command {
 	}
 
 	public DrivePath(String filepath) {
-		this(Pathfinder.readFromFile(new File("/home/lvuser/deploy/" + filepath))); // TODO: Use FileUtilities.getFilePath();
+		this(Pathfinder.readFromCSV(new File("/home/lvuser/deploy/" + filepath))); // TODO: Use FileUtilities.getFilePath();
 	}
 
 	public DrivePath(Waypoint[] points) {
@@ -68,6 +72,10 @@ public class DrivePath extends Command {
 	protected void initialize() {
 		Robot.m_drivetrain.reset();
 		Robot.m_drivetrain.setMode(SwerveMode.ModeSpeed);
+		m_frontLeft.reset();
+		m_frontRight.reset();
+		m_backLeft.reset();
+		m_backRight.reset();
 	}
 
 	@Override
