@@ -10,6 +10,13 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Gyro;
 import frc.robot.subsystems.Lights;
 
+/**
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the TimedRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the build.gradle file in the
+ * project.
+ */
 public class Robot extends TimedRobot {
 	public static Gyro m_gyro = new Gyro();
 	public static Lights m_lights = null; // new Lights();
@@ -59,6 +66,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
+		// This makes sure that the autonomous stops running when teleop starts running. 
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}
