@@ -66,7 +66,7 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 			m_swerveMode = SwerveMode.ModeSpeed;
 
 			if (!enabled) {
-				DriverStation.reportError("Module is set to be disabled: " + name, false);
+				DriverStation.reportError("Module is set to be disabled: " + m_name, false);
 			}
 			
 			m_talonAngle.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
@@ -320,6 +320,7 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 			m_controllerRotate.enable();
 		}
 		
+		m_controllerRotate.setPID(RobotMap.PIDs.DRIVE_ROTATE.getP(), RobotMap.PIDs.DRIVE_ROTATE.getI(), RobotMap.PIDs.DRIVE_ROTATE.getD());
 		m_controllerRotate.setSetpoint(setpoint);
 	}
 	

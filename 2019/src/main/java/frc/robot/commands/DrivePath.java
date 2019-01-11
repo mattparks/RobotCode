@@ -71,7 +71,7 @@ public class DrivePath extends Command {
 	}
 
 	public DrivePath(String filepath) {
-		this(readFromXML(new File("/home/lvuser/deploy/" + filepath))); // TODO: Use FileUtilities.getFilePath();
+		this(readFromXML(new File("/home/lvuser/deploy/" + filepath)));
 	}
 
 	public DrivePath(Waypoint[] points) {
@@ -86,7 +86,7 @@ public class DrivePath extends Command {
 			document.getDocumentElement().normalize();
 
 			// Path data defined in the XML is ignored, the path is the only data we look for.
-			System.out.println("Root element :" + document.getDocumentElement().getNodeName());
+			System.out.println("Root element: " + document.getDocumentElement().getNodeName());
 
 			NodeList nodeList = document.getElementsByTagName("Waypoint");
 			Waypoint[] waypoints = new Waypoint[nodeList.getLength()];
