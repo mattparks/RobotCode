@@ -8,14 +8,13 @@ import frc.robot.subsystems.Drivetrain.SwerveMode;
 public class DriveSpeed extends Command {
 	private double m_angle;
 	private double m_speed;
-	private double m_timeout;
 	private boolean m_moving;
 
 	public DriveSpeed(double angle, double speed, double timeout) {
+		super(timeout);
 		requires(Robot.m_drivetrain);
 		m_angle = angle;
 		m_speed = speed * RobotMap.Robot.DRIVE_M_TO_ENCODER;
-		m_timeout = timeout;
 		m_moving = false;
 	}
 
@@ -38,17 +37,12 @@ public class DriveSpeed extends Command {
 
 	@Override
 	protected boolean isFinished() {
-		if (m_moving) {
-			return timeSinceInitialized() > m_timeout;
-		}
-		
 		return false;
 	}
 
 	@Override
 	protected void end() {
 		Robot.m_drivetrain.stop();
-		m_moving = false;
 	}
 
 	@Override

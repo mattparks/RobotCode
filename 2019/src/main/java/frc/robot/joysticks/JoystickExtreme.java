@@ -28,9 +28,11 @@ public class JoystickExtreme extends IJoystick {
 	
 	public JoystickExtreme(int port) {
 		super(port);
+		add("DriveRotation", new ValueUsage(Axis.STICK_Z));
+		add("DriveStrafe", new ValueUsage(Axis.STICK_X));
 		add("DriveForward", new ValueUsage(Axis.STICK_Y, true));
-		add("DriveRotation", new ValueUsage(Axis.STICK_Z, false));
-		add("DriveQuickTurn", new ValueUsage(Keys.THUMB_TRIGGER));
+		add("DriveLock", new ValueUsage(Keys.INDEX_TRIGGER));
+		add("Pivot", new ValueUsage(Keys.THUMB_TRIGGER));
 	}
 	
 	@Override

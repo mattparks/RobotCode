@@ -28,11 +28,11 @@ public class JoystickF310 extends IJoystick {
 	
 	public JoystickF310(int port) {
 		super(port);
-		add("DriveTankLeft", new ValueUsage(Axis.LEFT_Y));
-		add("DriveTankRight", new ValueUsage(Axis.LEFT_Y));
+		add("DriveRotation", new ValueUsage(Axis.RIGHT_X, false));
+		add("DriveStrafe", new ValueUsage(Axis.LEFT_X, false));
 		add("DriveForward", new ValueUsage(Axis.LEFT_Y, true));
-		add("DriveRotation", new ValueUsage(Axis.LEFT_X));
-		add("DriveQuickTurn", new ValueUsage(Keys.BUMPER_RIGHT));
+		add("DriveLock", new ValueUsage(Keys.BUMPER_LEFT));
+		add("Pivot", new ValueUsage(Keys.BUMPER_RIGHT, false));
 	}
 
 	@Override

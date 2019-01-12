@@ -5,7 +5,7 @@ import frc.robot.Robot;
 
 public class DriveLock extends Command {
 	public DriveLock() {
-		requires(Robot.m_drivetrain);
+	//	requires(Robot.m_drivetrain);
 	}
 
 	@Override

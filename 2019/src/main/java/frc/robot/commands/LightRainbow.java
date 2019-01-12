@@ -19,7 +19,7 @@ public class LightRainbow extends Command {
 	@Override
 	protected void execute() {
 		float h = (1.0f + (float) Math.cos(0.6 * timeSinceInitialized())) / 2.0f;
-		Color color = Color.getHSBColor(360.0f * h, 1.0f, 1.0f);
+		Color color = Color.getHSBColor(h, 1.0f, 1.0f);
 		
 		m_r = (double) color.getRed() / 255.0;
 		m_b = (double) color.getGreen() / 255.0;
