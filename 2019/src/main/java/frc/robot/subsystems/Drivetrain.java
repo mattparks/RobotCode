@@ -24,11 +24,13 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		ModeDistance(ControlMode.Position, RobotMap.PIDs.DRIVE_MODE_DISTANCE);
 		
 		private final ControlMode m_controlMode;
-		private final PID m_pidDrive;
+		private PID m_pidDrive;
+		private boolean m_changed;
 		
 		private SwerveMode(ControlMode controlMode, PID pidDrive) {
 			m_controlMode = controlMode;
 			m_pidDrive = pidDrive;
+			m_changed = true;
 		//	SmartDashboard.putData(pidDrive);
 		}
 		
@@ -38,6 +40,19 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 
 		public PID getPidDrive() {
 			return m_pidDrive;
+		}
+
+		public void setPidDrive(PID pidDrive) {
+			m_pidDrive = pidDrive;
+			m_changed = true;
+		}
+
+		public boolean isChanged() {
+			return m_changed;
+		}
+
+		public void setChanged(boolean changed) {
+			m_changed = changed;
 		}
 	}
 
@@ -94,6 +109,11 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 			if (!m_enabled) {
 				return;
 			}
+
+			if (m_swerveMode.isChanged()) {
+				setDrivePID(m_swerveMode.getPidDrive());
+				m_swerveMode.setChanged(false);
+			}
 			
 			// Gets the sensor values.
 			m_currentAngle = m_talonAngle.getSelectedSensorPosition(RobotMap.kPIDLoopIdx);
@@ -122,6 +142,10 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 			
 			m_talonDrive.set(m_swerveMode.getControlMode(), m_setpointDrive);
 		}
+
+		public String getName() {
+			return m_name;
+		}
 		
 		public double getAngle() {
 			return 360.0 * (m_currentAngle / 4096.0); // degrees
@@ -138,14 +162,24 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		public SwerveMode getMode() {
 			return m_swerveMode;
 		}
+
+		public void setAnglePID(PID pid) {
+			m_talonAngle.config_kP(RobotMap.kPIDLoopIdx, pid.getP(), RobotMap.kTimeoutMs);
+			m_talonAngle.config_kI(RobotMap.kPIDLoopIdx, pid.getI(), RobotMap.kTimeoutMs);
+			m_talonAngle.config_kD(RobotMap.kPIDLoopIdx, pid.getD(), RobotMap.kTimeoutMs);
+			m_talonAngle.config_kF(RobotMap.kPIDLoopIdx, pid.getF(), RobotMap.kTimeoutMs);
+		}
+		
+		public void setDrivePID(PID pid) {
+			m_talonDrive.config_kP(RobotMap.kPIDLoopIdx, pid.getP(), RobotMap.kTimeoutMs);
+			m_talonDrive.config_kI(RobotMap.kPIDLoopIdx, pid.getI(), RobotMap.kTimeoutMs);
+			m_talonDrive.config_kD(RobotMap.kPIDLoopIdx, pid.getD(), RobotMap.kTimeoutMs);
+			m_talonDrive.config_kF(RobotMap.kPIDLoopIdx, pid.getF(), RobotMap.kTimeoutMs);
+		}
 		
 		public void setMode(SwerveMode swerveMode) {
-			m_talonDrive.config_kP(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getP(), RobotMap.kTimeoutMs);
-			m_talonDrive.config_kI(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getI(), RobotMap.kTimeoutMs);
-			m_talonDrive.config_kD(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getD(), RobotMap.kTimeoutMs);
-			m_talonDrive.config_kF(RobotMap.kPIDLoopIdx, swerveMode.getPidDrive().getF(), RobotMap.kTimeoutMs);
-	
 			m_swerveMode = swerveMode;
+			setDrivePID(m_swerveMode.getPidDrive());
 		}
 		
 		public void resetAngleReading() {
@@ -213,9 +247,11 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		RobotMap.CAN.DRIVE_BACK_RIGHT_ANGLE, RobotMap.CAN.DRIVE_BACK_RIGHT_DRIVE,
 		RobotMap.PIDs.DRIVE_ANGLE_BACK_RIGHT
 	);
+	private SwerveMode m_swerveMode;
 	private PIDController m_controllerRotate;
 
 	public Drivetrain() {
+		m_swerveMode = SwerveMode.ModeSpeed;
 		m_controllerRotate = new PIDController(RobotMap.PIDs.DRIVE_ROTATE.getP(), RobotMap.PIDs.DRIVE_ROTATE.getI(), RobotMap.PIDs.DRIVE_ROTATE.getD(),
 			Robot.m_gyro, this);
 		m_controllerRotate.setInputRange(0.0, 360.0);
@@ -303,11 +339,48 @@ public class Drivetrain extends Subsystem implements PIDOutput {
 		// Ignored, commands will set the drivetrain targets.
 	}
 
+	public SwerveModule getModule(int index) {
+		switch (index) {
+			case 0:
+				return m_frontLeft;
+			case 1:
+				return m_frontRight;
+			case 2:
+				return m_backLeft;
+			case 3:
+				return m_backRight;
+			default:
+				System.out.println("Index " + index + " is out of drive modules range");
+				return null;
+		}
+	}
+
+	public PID getModulePID(int index) {
+		switch (index) {
+			case 0:
+				return RobotMap.PIDs.DRIVE_ANGLE_FRONT_LEFT;
+			case 1:
+				return RobotMap.PIDs.DRIVE_ANGLE_FRONT_RIGHT;
+			case 2:
+				return RobotMap.PIDs.DRIVE_ANGLE_BACK_LEFT;
+			case 3:
+				return RobotMap.PIDs.DRIVE_ANGLE_BACK_RIGHT;
+			default:
+				System.out.println("Index " + index + " is out of drive modules range");
+				return null;
+		}
+	}
+
+	public SwerveMode getMode() {
+		return m_swerveMode;
+	}
+	
 	public void setMode(SwerveMode swerveMode) {
 		m_frontRight.setMode(swerveMode);
 		m_frontLeft.setMode(swerveMode);
 		m_backLeft.setMode(swerveMode);
 		m_backRight.setMode(swerveMode);
+		m_swerveMode = swerveMode;
 	}
 
 	public PIDController getControllerRotate() {

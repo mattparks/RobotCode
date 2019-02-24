@@ -66,6 +66,41 @@ public class PID extends SendableBase implements Sendable {
 		this(p, i, d, 0.0);
 	}
 
+	public double getIndex(int index) {
+		switch (index) {
+			case 0:
+				return p;
+			case 1:
+				return i;
+			case 2:
+				return d;
+			case 3:
+				return f;
+			default:
+				System.out.println("Index " + index + " is out of PID range");
+				return 0.0;
+		}
+	}
+
+	public void setIndex(int index, double p) {
+		switch (index) {
+			case 0:
+				this.p = p;
+				break;
+			case 1:
+				this.p = p;
+				break;
+			case 2:
+				this.p = p;
+				break;
+			case 3:
+				this.p = p;
+				break;
+			default:
+				System.out.println("Index " + index + " is out of PID range");
+		}
+	}
+
 	public double getP() {
 		return p;
 	}

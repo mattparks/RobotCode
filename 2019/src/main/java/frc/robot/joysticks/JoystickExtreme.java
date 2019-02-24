@@ -33,6 +33,13 @@ public class JoystickExtreme extends IJoystick {
 		add("DriveForward", new ValueUsage(Axis.STICK_Y, true));
 		add("DriveLock", new ValueUsage(Keys.INDEX_TRIGGER));
 		add("Pivot", new ValueUsage(Keys.THUMB_TRIGGER));
+		
+		add("TuneModule", new ValueUsage(Keys.STICK_3));
+		add("TuneMode", new ValueUsage(Keys.STICK_4));
+		add("TuneIncrement", new ValueUsage(Keys.STICK_5));
+		add("TuneP", new ValueUsage(Keys.BASE_7));
+		add("TuneI", new ValueUsage(Keys.BASE_8));
+		add("TuneD", new ValueUsage(Keys.BASE_9));
 	}
 	
 	@Override
